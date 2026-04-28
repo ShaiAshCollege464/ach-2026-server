@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="server_2026_b.server.entities.User" table="users">
+        <id name="id" column="id" type="long">
+            <generator class="identity"/>
+        </id>
+        <property name="username" column="username" type="string" not-null="true"/>
+        <property name="password" column="password" type="string"/>
+        <property name="roleType" column="role_type" type="string"/>
+    </class>
+
+
+    <class name="server_2026_b.server.entities.WorkerEntity" table="workers">
+        <id name="id" column="id" type="int">
+            <generator class="identity"/>
+        </id>
+        <property name="firstName" column="first_name" type="string"/>
+        <property name="lastName" column="last_name" type="string"/>
+        <property name="workerId" column="worker_id" type="string"/>
+        <property name="role" column="role" type="string"/>
+        <many-to-one
+                name="managerEntity"
+                column="manager_id"
+                     class="server_2026_b.server.entities.WorkerEntity" />
+        <many-to-one
+                name="teamEntity"
+                column="team_id"
+                class="server_2026_b.server.entities.TeamEntity" />
+
+    </class>
+
+    <class name="server_2026_b.server.entities.TeamEntity" table="teams">
+        <id name="id" column="id" type="int">
+            <generator class="identity"/>
+        </id>
+        <property name="name" column="name" type="string"/>
+    </class>
+
+
+</hibernate-mapping>
