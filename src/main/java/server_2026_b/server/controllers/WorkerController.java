@@ -97,7 +97,22 @@ public class WorkerController {
     @RequestMapping("get-teams")
     public List<TeamModel> getTeams () {
         List<TeamEntity> allTeams = persist.loadList(TeamEntity.class);
-        return allTeams.stream().map(TeamModel::new).toList();
+        List<TeamModel> teamModels = allTeams.stream().map(TeamModel::new).toList();
+        List<WorkerEntity> allWorkers = this.persist.loadList(WorkerEntity.class);
+        for (WorkerEntity workerEntity : allWorkers) {
+            int teamId = workerEntity.getTeamEntity().getId();
+            TeamModel teamModel = null;
+            for (int i = 0; i < teamModels.size(); i++) {
+                if (teamModels.get(i).getId() == teamId) {
+                    teamModel = teamModels.get(i);
+                    break;
+                }
+            }
+            if (teamModel != null) {
+                teamModel.incrementWorkersCount();
+            }
+        }
+        return teamModels;
     }
 
     @RequestMapping("change-team")

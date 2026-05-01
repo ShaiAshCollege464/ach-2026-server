@@ -5,6 +5,7 @@ import server_2026_b.server.entities.TeamEntity;
 public class TeamModel {
     private int id;
     private String name;
+    private int workersCount;
 
     public TeamModel () {
 
@@ -29,5 +30,17 @@ public class TeamModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getWorkersCount() {
+        return workersCount;
+    }
+
+    public void setWorkersCount(int workersCount) {
+        this.workersCount = workersCount;
+    }
+
+    public void incrementWorkersCount () {
+        this.workersCount++;
     }
 }
