@@ -1,5 +1,6 @@
 package server_2026_b.server.controllers;
 
+import com.github.javafaker.Faker;
 import org.springframework.web.bind.annotation.RequestMapping;
 import server_2026_b.server.entities.TeamEntity;
 import server_2026_b.server.entities.WorkerEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 public class WorkerController {
@@ -24,6 +26,34 @@ public class WorkerController {
 
     @PostConstruct
     public void init () {
+        List<WorkerEntity> allWorkers = this.persist.loadList(WorkerEntity.class);
+
+        if (allWorkers.size() < 200) {
+            Faker faker = new Faker();
+            Random random = new Random();
+            List<TeamEntity> teamEntities = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                TeamEntity teamEntity = new TeamEntity();
+                teamEntity.setName(faker.funnyName().name());
+                this.persist.save(teamEntity);
+                teamEntities.add(teamEntity);
+            }
+            for (int i = 0; i < 200; i++) {
+                WorkerEntity workerEntity = new WorkerEntity();
+                workerEntity.setFirstName(faker.name().firstName());
+                workerEntity.setLastName(faker.name().lastName());
+                workerEntity.setWorkerId(String.valueOf(random.nextInt(1000000, 9000000)));
+                workerEntity.setRole(faker.job().position());
+                WorkerEntity manager = allWorkers.get(random.nextInt(allWorkers.size()));
+                workerEntity.setManagerEntity(manager);
+                TeamEntity teamEntity = teamEntities.get(random.nextInt(teamEntities.size()));
+                workerEntity.setTeamEntity(teamEntity);
+                workerEntity.setToken(String.valueOf(random.nextInt(1000000, 9000000)));
+                allWorkers.add(workerEntity);
+                this.persist.save(workerEntity);
+            }
+        }
+
     }
 
 
@@ -35,17 +65,27 @@ public class WorkerController {
 
     @RequestMapping("get-workers-by-manager")
     public List<WorkerModel> getWorkersByManager (String token) {
-        int managerId = 4;//TODO: load id by token
-        List<WorkerEntity> workerEntities = this.persist.loadList(WorkerEntity.class);
-        List<WorkerModel> relevant = new ArrayList<>();
-        for (WorkerEntity workerEntity : workerEntities) {
-            if (workerEntity.getManagerEntity() != null && workerEntity.getManagerEntity().getId() == managerId) {
-                relevant.add(new WorkerModel(workerEntity));
-            }
-        }
+        if (token != null) {
+            WorkerEntity manager = this.persist.getWorkerByToken(token);
+            if (manager != null) {
+                int managerId = manager.getId();
+                List<WorkerEntity> workerEntities = this.persist.loadList(WorkerEntity.class);
+                List<WorkerModel> relevant = new ArrayList<>();
+                for (WorkerEntity workerEntity : workerEntities) {
+                    if (workerEntity.getManagerEntity() != null && workerEntity.getManagerEntity().getId() == managerId) {
+                        relevant.add(new WorkerModel(workerEntity));
+                    }
+                }
 
-        System.out.println("This is new line by Dror");
-        return relevant;
+                System.out.println("This is new line by Dror");
+                return relevant;
+            } else {
+                System.out.println("Invaliad token");
+            }
+        } else {
+            System.out.println("No token");
+        }
+        return null;
     }
 
     @RequestMapping("get-worker-details")

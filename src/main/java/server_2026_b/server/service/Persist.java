@@ -61,4 +61,14 @@ public class Persist {
                 .setParameter("id", managerId)
                 .list();
     }
+
+
+    public WorkerEntity getWorkerByToken (String token) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("FROM WorkerEntity WHERE token = :token", WorkerEntity.class)
+                .setParameter("token", token)
+                .setMaxResults(1)
+                .uniqueResult();
+
+    }
 }

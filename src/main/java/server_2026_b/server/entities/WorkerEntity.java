@@ -7,6 +7,7 @@ public class WorkerEntity extends BasicEntity {
     private String role;
     private WorkerEntity managerEntity;
     private TeamEntity teamEntity;
+    private String token;
 
     public WorkerEntity () {
     }
@@ -64,5 +65,13 @@ public class WorkerEntity extends BasicEntity {
 
     public void setTeamEntity(TeamEntity teamEntity) {
         this.teamEntity = teamEntity;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
