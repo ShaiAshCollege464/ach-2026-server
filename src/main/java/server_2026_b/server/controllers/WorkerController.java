@@ -29,6 +29,7 @@ public class WorkerController {
 
     @RequestMapping("get-all-workers")
     public List<WorkerEntity> getAllWorkers () {
+        System.out.println("This is from the dev branch");
         return this.persist.loadList(WorkerEntity.class);
     }
 
