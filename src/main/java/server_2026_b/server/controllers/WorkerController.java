@@ -29,7 +29,7 @@ public class WorkerController {
 
     @RequestMapping("get-all-workers")
     public List<WorkerEntity> getAllWorkers () {
-        System.out.println("This is from the dev branch");
+        System.out.println("This is from master");
         return this.persist.loadList(WorkerEntity.class);
     }
 
@@ -43,6 +43,8 @@ public class WorkerController {
                 relevant.add(new WorkerModel(workerEntity));
             }
         }
+
+        System.out.println("This is new line by Dror");
         return relevant;
     }
 
