@@ -6,7 +6,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import server_2026_b.server.entities.WorkerEntity;
+import server_2026_b.server.responses.UserResponse;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 @Transactional
@@ -71,13 +74,29 @@ public class Persist {
                 .uniqueResult();
 
     }
-    //   //login query
-    // public UserResponse login(String username, String password) {
-    //     boolean userValid = false;
-    //     User user = new User();
-        
-    //    return 
-    //     return new UserResponse(false, GENERIC_ERROR);
+       //login query
+     public UserResponse login(String username, String password) {
+        if(username.isEmpty() || password.isEmpty()) { return new UserResponse(false,1232,null);}
 
-    // }
+        User newuser=sessionFactory.getCurrentSession()
+                .createQuery("FROM User WHERE username = :username and password= :password", User.class)
+                .setParameter("username", username)
+                .setParameter("password", password)
+                .setMaxResults(1)
+                .uniqueResult();
+        newuser.setPassword("");
+        if(newuser!=null) {
+            return new UserResponse(true, 200, newuser);
+        }
+        return new UserResponse(false,1232,null);
+     }
+    public void registerUser(String username, String password) {
+        User newUser = new User();
+        newUser.setUsername(username);
+
+        sessionFactory.getCurrentSession().save(newUser);
+    }
+
+
+
 }

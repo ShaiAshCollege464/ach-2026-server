@@ -1,36 +1,34 @@
-package com.social.controllers;
+package server_2026_b.server.controllers;
 
-import com.social.Entity.*;
-import com.social.responses.BasicResponse;
-import com.social.responses.PostResponse;
-import com.social.responses.UserResponse;
-import com.social.utils.DbUtils;
-import com.social.utils.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.*;
+import com.github.javafaker.Faker;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import server_2026_b.server.entities.TeamEntity;
+import server_2026_b.server.entities.WorkerEntity;
+import server_2026_b.server.responses.TeamModel;
+import server_2026_b.server.responses.UserResponse;
+import server_2026_b.server.service.Persist;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+
 
 
 @RestController
-public class GeneralController {
+public class AuthController {
+    private final Persist persist;
+
+    public AuthController(Persist persist) {
+        this.persist = persist;
+    }
 
     @PostConstruct
     public void init() {
-                this.persist = persist;
 
     }
     private String generateMD5(String username, String password) {
@@ -50,23 +48,16 @@ public class GeneralController {
             throw new RuntimeException("MD5 algorithm not found", e);
         }
     }
-
-   
-    @PostMapping("/register") 
-    public BasicResponse register(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam(value = "photo", required = false) MultipartFile photo 
-    ) {
-        String hashedPassword = generateMD5(username, password);
-        return dbUtils.registerUser(username, hashedPassword, savedPath);
+    @RequestMapping("/register")
+    public void register(
+             String username,String password) {
+        System.out.println("test");
+//        String hashedPassword = generateMD5(username, password);
+        String hashedPassword = password;
+        this.persist.registerUser(username, hashedPassword);
     }
-
-   
-
     @RequestMapping(value = "/Login")
-    public UserResponse login(@RequestParam("username") String username, 
-                              @RequestParam("password") String password) {
+    public UserResponse login(String username, String password) {
        // String hashedPassword = generateMD5(username, password);
        String hashedPassword = password;
         UserResponse result = this.persist.login(username, hashedPassword);
