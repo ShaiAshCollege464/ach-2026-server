@@ -84,7 +84,6 @@ public class Persist {
                 .setParameter("password", password)
                 .setMaxResults(1)
                 .uniqueResult();
-        newuser.setPassword("");
         if(newuser!=null) {
             return new UserResponse(true, 200, newuser);
         }
