@@ -23,7 +23,6 @@ public class WorkerController {
         this.persist = persist;
     }
 
-
     @PostConstruct
     public void init () {
         List<WorkerEntity> allWorkers = this.persist.loadList(WorkerEntity.class);

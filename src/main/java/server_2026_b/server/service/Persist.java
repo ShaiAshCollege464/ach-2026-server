@@ -71,4 +71,13 @@ public class Persist {
                 .uniqueResult();
 
     }
+    //   //login query
+    // public UserResponse login(String username, String password) {
+    //     boolean userValid = false;
+    //     User user = new User();
+        
+    //    return 
+    //     return new UserResponse(false, GENERIC_ERROR);
+
+    // }
 }
