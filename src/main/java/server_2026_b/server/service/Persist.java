@@ -1,6 +1,7 @@
 package server_2026_b.server.service;
 
-import server_2026_b.server.entities.User;
+import server_2026_b.server.controllers.AuthController;
+import server_2026_b.server.entities.UserEntity;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
@@ -8,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import server_2026_b.server.entities.WorkerEntity;
 import server_2026_b.server.responses.UserResponse;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 @Transactional
@@ -50,9 +49,9 @@ public class Persist {
                 .createQuery("FROM " + clazz.getSimpleName()).list();
     }
 
-    public List<User> getUserByUsernameAndPassword(String username, String password) {
+    public List<UserEntity> getUserByUsernameAndPassword(String username, String password) {
         return sessionFactory.getCurrentSession()
-                .createQuery("FROM User WHERE username = :username AND password = :password", User.class)
+                .createQuery("FROM UserEntity WHERE username = :username AND password = :password", UserEntity.class)
                 .setParameter("username", username)
                 .setParameter("password", password)
                 .list();
@@ -68,7 +67,7 @@ public class Persist {
 
     public WorkerEntity getWorkerByToken (String token) {
         return sessionFactory.getCurrentSession()
-                .createQuery("FROM WorkerEntity WHERE token = :token", WorkerEntity.class)
+                .createQuery("SELECT u.workerEntity FROM UserEntity u WHERE u.token = :token", WorkerEntity.class)
                 .setParameter("token", token)
                 .setMaxResults(1)
                 .uniqueResult();
@@ -78,22 +77,25 @@ public class Persist {
      public UserResponse login(String username, String password) {
         if(username.isEmpty() || password.isEmpty()) { return new UserResponse(false,1232,null);}
 
-        User newuser=sessionFactory.getCurrentSession()
-                .createQuery("FROM User WHERE username = :username and password= :password", User.class)
+        UserEntity newuser=sessionFactory.getCurrentSession()
+                .createQuery("FROM UserEntity WHERE username = :username and password= :password", UserEntity.class)
                 .setParameter("username", username)
                 .setParameter("password", password)
                 .setMaxResults(1)
                 .uniqueResult();
         if(newuser!=null) {
+            String token = AuthController.generateMD5(username, password + System.currentTimeMillis());
+            newuser.setToken(token);
+            save(newuser);
             return new UserResponse(true, 200, newuser);
         }
         return new UserResponse(false,1232,null);
      }
     public void registerUser(String username, String password) {
-        User newUser = new User();
-        newUser.setUsername(username);
+        UserEntity newUserEntity = new UserEntity();
+        newUserEntity.setUsername(username);
 
-        sessionFactory.getCurrentSession().save(newUser);
+        sessionFactory.getCurrentSession().save(newUserEntity);
     }
 
 

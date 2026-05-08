@@ -1,6 +1,7 @@
 package server_2026_b.server.controllers;
 
 import com.github.javafaker.Faker;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import server_2026_b.server.entities.TeamEntity;
 import server_2026_b.server.entities.WorkerEntity;
@@ -43,7 +44,10 @@ public class WorkerController {
                 workerEntity.setLastName(faker.name().lastName());
                 workerEntity.setWorkerId(String.valueOf(random.nextInt(1000000, 9000000)));
                 workerEntity.setRole(faker.job().position());
-                WorkerEntity manager = allWorkers.get(random.nextInt(allWorkers.size()));
+                WorkerEntity manager = null;
+                if (!allWorkers.isEmpty()) {
+                    manager = allWorkers.get(random.nextInt(allWorkers.size()));
+                }
                 workerEntity.setManagerEntity(manager);
                 TeamEntity teamEntity = teamEntities.get(random.nextInt(teamEntities.size()));
                 workerEntity.setTeamEntity(teamEntity);
@@ -63,7 +67,7 @@ public class WorkerController {
     }
 
     @RequestMapping("get-workers-by-manager")
-    public List<WorkerModel> getWorkersByManager (String token) {
+    public List<WorkerModel> getWorkersByManager (@CookieValue(value = "token") String token) {
         if (token != null) {
             WorkerEntity manager = this.persist.getWorkerByToken(token);
             if (manager != null) {

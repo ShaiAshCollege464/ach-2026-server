@@ -1,23 +1,24 @@
 package server_2026_b.server.responses;
 
-import server_2026_b.server.entities.User;
+import server_2026_b.server.entities.UserEntity;
 
 public class UserResponse extends BasicResponse{
-    private User user;
+    private UserModel user;
 
-    public UserResponse(boolean success, Integer errorCode, User user) {
+    public UserResponse(boolean success, Integer errorCode, UserEntity userEntity) {
         super(success, errorCode);
-        this.user = user;
-    }
-    public User getUser() {
-        return user;
+        this.user = new UserModel(userEntity);
     }
 
     public UserResponse(boolean success, Integer errorCode) {
         super(success, errorCode);
     }
 
-    public void setUser(User user) {
+    public UserModel getUser() {
+        return user;
+    }
+
+    public void setUser(UserModel user) {
         this.user = user;
     }
 }

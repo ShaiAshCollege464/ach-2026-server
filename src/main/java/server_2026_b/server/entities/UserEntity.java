@@ -1,20 +1,23 @@
 package server_2026_b.server.entities;
 
-public class User {
+public class UserEntity {
     private Long id;
     private String username;
     private String password;
     private String roleType;
+    private String token;
+    private WorkerEntity workerEntity;
 
-    public User() {
+    public UserEntity() {
     }
 
-    public User(String username, String password, String roleType) {
+    public UserEntity(String username, String password, String roleType) {
         this.username = username;
         this.password = password;
         this.roleType = roleType;
     }
-    public User(String username, String roleType) {
+
+    public UserEntity(String username, String roleType) {
         this.username = username;
         this.roleType = roleType;
     }
@@ -49,5 +52,21 @@ public class User {
 
     public void setRoleType(String roleType) {
         this.roleType = roleType;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public WorkerEntity getWorkerEntity() {
+        return workerEntity;
+    }
+
+    public void setWorkerEntity(WorkerEntity workerEntity) {
+        this.workerEntity = workerEntity;
     }
 }

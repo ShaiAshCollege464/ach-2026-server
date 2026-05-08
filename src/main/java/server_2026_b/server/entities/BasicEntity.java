@@ -9,7 +9,7 @@ public class BasicEntity {
     private Date modifyDate;
 
     public BasicEntity () {
-        System.out.println("Creating new object");
+//        System.out.println("Creating new object");
     }
 
     public int getId() {
