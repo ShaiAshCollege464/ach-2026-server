@@ -138,5 +138,13 @@ public class WorkerController extends BasicController {
 
     }
 
+    @RequestMapping ("/update-team")
+    public TeamDetailsResponse updateTeam (@CookieValue(value = "token") String token, String name, int id) {
+        TeamEntity teamEntity = persist.loadObject(TeamEntity.class, id);
+        teamEntity.setName(name);
+        persist.save(teamEntity);
+        return teamDetails(token, id);
+    }
+
 
 }

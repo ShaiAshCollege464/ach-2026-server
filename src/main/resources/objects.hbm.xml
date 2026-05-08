@@ -44,5 +44,19 @@
         <property name="name" column="name" type="string"/>
     </class>
 
+    <class name="server_2026_b.server.entities.TaskEntity" table="tasks">
+        <id name="id" column="id" type="int">
+            <generator class="identity"/>
+        </id>
+        <property name="title" column="title" type="string"/>
+        <property name="details" column="details" type="string"/>
+        <property name="start" column="start" type="java.util.Date"/>
+        <property name="hoursEstimation" column="hours_estimation" type="int"/>
+        <many-to-one
+                name="teamEntity"
+                column="team_id"
+                class="server_2026_b.server.entities.TeamEntity" />
+    </class>
+
 
 </hibernate-mapping>
