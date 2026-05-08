@@ -98,6 +98,12 @@ public class Persist {
         sessionFactory.getCurrentSession().save(newUserEntity);
     }
 
+    public List<WorkerEntity> getWorkersByTeam (int teamId) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("FROM WorkerEntity WHERE teamEntity.id = :id", WorkerEntity.class)
+                .setParameter("id", teamId)
+                .list();
+    }
 
 
 }

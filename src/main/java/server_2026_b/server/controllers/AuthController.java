@@ -1,12 +1,7 @@
 package server_2026_b.server.controllers;
 
-import com.github.javafaker.Faker;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import server_2026_b.server.entities.TeamEntity;
-import server_2026_b.server.entities.WorkerEntity;
 import server_2026_b.server.responses.BasicResponse;
-import server_2026_b.server.responses.TeamModel;
 import server_2026_b.server.responses.UserResponse;
 import server_2026_b.server.service.Persist;
 
@@ -19,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 
 @RestController
-public class AuthController {
+public class AuthController extends BasicController {
     private final Persist persist;
 
     public AuthController(Persist persist) {
@@ -72,7 +67,7 @@ public class AuthController {
 
     @RequestMapping("/me")
     public BasicResponse me(@CookieValue("token") String token) {
-        return new BasicResponse(token != null && !token.isEmpty(), null);
+        return new BasicResponse(token != null && !token.isEmpty(), null, null);
     }
 
 

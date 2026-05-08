@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import server_2026_b.server.entities.TeamEntity;
 import server_2026_b.server.entities.WorkerEntity;
+import server_2026_b.server.responses.TeamDetailsResponse;
 import server_2026_b.server.responses.TeamModel;
 import server_2026_b.server.responses.WorkerModel;
 import server_2026_b.server.service.Persist;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Random;
 
 @RestController
-public class WorkerController {
+public class WorkerController extends BasicController {
 
     private final Persist persist;
 
@@ -51,7 +52,6 @@ public class WorkerController {
                 workerEntity.setManagerEntity(manager);
                 TeamEntity teamEntity = teamEntities.get(random.nextInt(teamEntities.size()));
                 workerEntity.setTeamEntity(teamEntity);
-                workerEntity.setToken(String.valueOf(random.nextInt(1000000, 9000000)));
                 allWorkers.add(workerEntity);
                 this.persist.save(workerEntity);
             }
@@ -76,14 +76,14 @@ public class WorkerController {
                 List<WorkerModel> relevant = new ArrayList<>();
                 for (WorkerEntity workerEntity : workerEntities) {
                     if (workerEntity.getManagerEntity() != null && workerEntity.getManagerEntity().getId() == managerId) {
-                        relevant.add(new WorkerModel(workerEntity));
+                        relevant.add(new WorkerModel(null, workerEntity));
                     }
                 }
 
                 System.out.println("This is new line by Dror");
                 return relevant;
             } else {
-                System.out.println("Invaliad token");
+                System.out.println("Invalid token");
             }
         } else {
             System.out.println("No token");
@@ -94,28 +94,31 @@ public class WorkerController {
     @RequestMapping("get-worker-details")
     public WorkerModel getWorkerDetails (int workerId) {
         WorkerEntity workerEntity = persist.loadObject(WorkerEntity.class, workerId);
-        return new WorkerModel(workerEntity);
+        return new WorkerModel(null, workerEntity);
     }
 
     @RequestMapping("get-teams")
-    public List<TeamModel> getTeams () {
+    public List<TeamModel> getTeams (@CookieValue(value = "token") String token) {
         List<TeamEntity> allTeams = persist.loadList(TeamEntity.class);
+        WorkerEntity manager = persist.getWorkerByToken(token);
         List<TeamModel> teamModels = allTeams.stream().map(TeamModel::new).toList();
         List<WorkerEntity> allWorkers = this.persist.loadList(WorkerEntity.class);
         for (WorkerEntity workerEntity : allWorkers) {
-            int teamId = workerEntity.getTeamEntity().getId();
-            TeamModel teamModel = null;
-            for (int i = 0; i < teamModels.size(); i++) {
-                if (teamModels.get(i).getId() == teamId) {
-                    teamModel = teamModels.get(i);
-                    break;
+            if (workerEntity.getManagerEntity() != null && workerEntity.getManagerEntity().getId() == manager.getId()) {
+                int teamId = workerEntity.getTeamEntity().getId();
+                TeamModel teamModel = null;
+                for (int i = 0; i < teamModels.size(); i++) {
+                    if (teamModels.get(i).getId() == teamId) {
+                        teamModel = teamModels.get(i);
+                        break;
+                    }
+                }
+                if (teamModel != null) {
+                    teamModel.incrementWorkersCount();
                 }
             }
-            if (teamModel != null) {
-                teamModel.incrementWorkersCount();
-            }
         }
-        return teamModels;
+        return teamModels.stream().filter((item) -> item.getWorkersCount() > 0).toList();
     }
 
     @RequestMapping("change-team")
@@ -124,6 +127,15 @@ public class WorkerController {
         TeamEntity teamEntity = persist.loadObject(TeamEntity.class, teamId);
         workerEntity.setTeamEntity(teamEntity);
         persist.save(workerEntity);
+    }
+
+    @RequestMapping("/team-details")
+    public TeamDetailsResponse teamDetails (@CookieValue(value = "token") String token,  int id) {
+        WorkerEntity manager = persist.getWorkerByToken(token);
+        TeamEntity teamEntity = persist.loadObject(TeamEntity.class, id);
+        List<WorkerEntity> workerEntities = persist.getWorkersByTeam(id);
+        return new TeamDetailsResponse(true, null, teamEntity, workerEntities, manager);
+
     }
 
 
