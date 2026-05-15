@@ -75,12 +75,11 @@ public class Persist {
     }
        //login query
      public UserResponse login(String username, String password) {
-        if(username.isEmpty() || password.isEmpty()) { return new UserResponse(false,1232,null);}
+        if(username.isEmpty()) { return new UserResponse(false,1232,null);}
 
         UserEntity newuser=sessionFactory.getCurrentSession()
-                .createQuery("FROM UserEntity WHERE username = :username and password= :password", UserEntity.class)
+                .createQuery("FROM UserEntity WHERE username = :username", UserEntity.class)
                 .setParameter("username", username)
-                .setParameter("password", password)
                 .setMaxResults(1)
                 .uniqueResult();
         if(newuser!=null) {
@@ -103,6 +102,15 @@ public class Persist {
                 .createQuery("FROM WorkerEntity WHERE teamEntity.id = :id", WorkerEntity.class)
                 .setParameter("id", teamId)
                 .list();
+    }
+
+    public UserEntity getUserByWorker (WorkerEntity workerEntity) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("FROM UserEntity u WHERE u.workerEntity.id = :id", UserEntity.class)
+                .setParameter("id", workerEntity.getId())
+                .setMaxResults(1)
+                .uniqueResult();
+
     }
 
 
