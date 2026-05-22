@@ -19,6 +19,7 @@ import static server_2026_b.server.utils.TotpUtils.getCurrentCodeFromBase32;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AuthController extends BasicController {
     private final Persist persist;
 
@@ -57,8 +58,14 @@ public class AuthController extends BasicController {
     }
     @RequestMapping(value = "/Login")
     public UserResponse login(String username, String password, HttpServletResponse response) {
-        String secret = TotpUtils.toBase32("SHAI_GIVATI");
+        String secret = TotpUtils.toBase32(username);
         String otp = getCurrentCodeFromBase32(secret);
+        System.out.println("--- TOTP DEBUG ---");
+        System.out.println("Username: " + username);
+        System.out.println("Secret (Base32): " + secret);
+        System.out.println("Server generated OTP: " + otp);
+        System.out.println("User entered password/OTP: " + password);
+        System.out.println("------------------");
         UserResponse result = this.persist.login(username, "");
         if (result != null && result.isSuccess() && otp.equals(password)) {
             StringBuilder stringBuilder = new StringBuilder("token=")
@@ -67,8 +74,10 @@ public class AuthController extends BasicController {
                     .append("; Max-Age=").append(60 * 60 * 24)
                     .append("; HttpOnly");
             response.addHeader("Set-Cookie", stringBuilder.toString());
+            return result;
+        } else {
+            return null;
         }
-        return result;
     }
 
     @RequestMapping("/me")
