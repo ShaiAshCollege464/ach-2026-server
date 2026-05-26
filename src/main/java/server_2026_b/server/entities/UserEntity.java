@@ -7,7 +7,10 @@ public class UserEntity {
     private String roleType;
     private String token;
     private WorkerEntity workerEntity;
+
+
     private boolean shouldDisplayQr;
+
 
     public UserEntity() {
     }
@@ -78,4 +81,5 @@ public class UserEntity {
     public boolean isShouldDisplayQr() {
         return shouldDisplayQr;
     }
+
 }

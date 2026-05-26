@@ -1,6 +1,11 @@
 package server_2026_b.server.controllers;
 
 import org.springframework.web.bind.annotation.*;
+
+import server_2026_b.server.responses.BasicResponse;
+import server_2026_b.server.responses.UserResponse;
+import server_2026_b.server.service.Persist;
+
 import server_2026_b.server.entities.UserEntity;
 import server_2026_b.server.entities.WorkerEntity;
 import server_2026_b.server.responses.AuthenticatorResponse;
@@ -9,18 +14,25 @@ import server_2026_b.server.responses.UserResponse;
 import server_2026_b.server.service.Persist;
 import server_2026_b.server.utils.TotpUtils;
 
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+
+
+
+@RestController
+
 import static server_2026_b.server.utils.TotpUtils.getCurrentCodeFromBase32;
 
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
-public class AuthController extends BasicController {
+
+public class AuthController extends BasicController 
     private final Persist persist;
 
     public AuthController(Persist persist) {
@@ -58,6 +70,11 @@ public class AuthController extends BasicController {
     }
     @RequestMapping(value = "/Login")
     public UserResponse login(String username, String password, HttpServletResponse response) {
+
+        String hashedPassword = generateMD5(username, password);
+        UserResponse result = this.persist.login(username, hashedPassword);
+        if (result != null && result.isSuccess()) {
+
         String secret = TotpUtils.toBase32(username);
         String otp = getCurrentCodeFromBase32(secret);
         System.out.println("--- TOTP DEBUG ---");
@@ -68,6 +85,7 @@ public class AuthController extends BasicController {
         System.out.println("------------------");
         UserResponse result = this.persist.login(username, "");
         if (result != null && result.isSuccess() && otp.equals(password)) {
+
             StringBuilder stringBuilder = new StringBuilder("token=")
                     .append(result.getUser().getToken())
                     .append("; Path=/")
@@ -84,6 +102,8 @@ public class AuthController extends BasicController {
     public BasicResponse me(@CookieValue("token") String token) {
         return new BasicResponse(token != null && !token.isEmpty(), null, null);
     }
+
+
 
     @RequestMapping("/get-authenticator-uri")
     public BasicResponse getAuthenticatorUri(@CookieValue(value = "token") String token) {

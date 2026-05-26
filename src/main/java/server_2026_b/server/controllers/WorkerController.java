@@ -2,7 +2,10 @@ package server_2026_b.server.controllers;
 
 import com.github.javafaker.Faker;
 import org.springframework.web.bind.annotation.CookieValue;
+
+
 import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import server_2026_b.server.entities.TeamEntity;
 import server_2026_b.server.entities.WorkerEntity;
@@ -18,7 +21,10 @@ import java.util.List;
 import java.util.Random;
 
 @RestController
+
+
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+
 public class WorkerController extends BasicController {
 
     private final Persist persist;
@@ -81,6 +87,9 @@ public class WorkerController extends BasicController {
                         relevant.add(new WorkerModel(null, workerEntity));
                     }
                 }
+
+
+                System.out.println("This is new line by Dror");
 
                 return relevant;
             } else {
@@ -147,5 +156,41 @@ public class WorkerController extends BasicController {
         return teamDetails(token, id);
     }
 
+@RequestMapping("/add-worker")
+public WorkerModel addWorker(
+        @CookieValue(value = "token", required = false) String token,
+        String firstName,
+        String lastName,
+        String workerId,
+        String role,
+        int teamId) {
 
+    WorkerEntity manager = null;
+
+    if (token != null && !token.isEmpty()) {
+        manager = this.persist.getWorkerByToken(token);
+    }
+
+    WorkerEntity worker = new WorkerEntity();
+
+    worker.setFirstName(firstName);
+    worker.setLastName(lastName);
+    worker.setWorkerId(workerId);
+    worker.setRole(role);
+
+    if (manager != null) {
+        worker.setManagerEntity(manager);
+    }
+
+    worker.setTeamEntity(
+            this.persist.loadObject(TeamEntity.class, teamId)
+    );
+
+    this.persist.save(worker);
+
+    return new WorkerModel(null, worker);
 }
+}
+
+
+
