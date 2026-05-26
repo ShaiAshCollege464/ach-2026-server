@@ -15,6 +15,9 @@
                 column="worker_id"
                 class="server_2026_b.server.entities.WorkerEntity" />
 
+
+        <property name="shouldDisplayQr" column="should_display_qr" type="boolean"/>
+
     </class>
 
 

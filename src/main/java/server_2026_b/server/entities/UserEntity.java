@@ -8,6 +8,10 @@ public class UserEntity {
     private String token;
     private WorkerEntity workerEntity;
 
+
+    private boolean shouldDisplayQr;
+
+
     public UserEntity() {
     }
 
@@ -69,4 +73,13 @@ public class UserEntity {
     public void setWorkerEntity(WorkerEntity workerEntity) {
         this.workerEntity = workerEntity;
     }
+
+    public void setShouldDisplayQr(boolean shouldDisplayQr) {
+        this.shouldDisplayQr = shouldDisplayQr;
+    }
+
+    public boolean isShouldDisplayQr() {
+        return shouldDisplayQr;
+    }
+
 }

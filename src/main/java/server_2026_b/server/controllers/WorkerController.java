@@ -2,6 +2,10 @@ package server_2026_b.server.controllers;
 
 import com.github.javafaker.Faker;
 import org.springframework.web.bind.annotation.CookieValue;
+
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import server_2026_b.server.entities.TeamEntity;
 import server_2026_b.server.entities.WorkerEntity;
@@ -17,6 +21,10 @@ import java.util.List;
 import java.util.Random;
 
 @RestController
+
+
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+
 public class WorkerController extends BasicController {
 
     private final Persist persist;
@@ -80,7 +88,9 @@ public class WorkerController extends BasicController {
                     }
                 }
 
+
                 System.out.println("This is new line by Dror");
+
                 return relevant;
             } else {
                 System.out.println("Invalid token");
@@ -145,6 +155,7 @@ public class WorkerController extends BasicController {
         persist.save(teamEntity);
         return teamDetails(token, id);
     }
+
 @RequestMapping("/add-worker")
 public WorkerModel addWorker(
         @CookieValue(value = "token", required = false) String token,
@@ -180,3 +191,6 @@ public WorkerModel addWorker(
     return new WorkerModel(null, worker);
 }
 }
+
+
+

@@ -1,6 +1,10 @@
 package server_2026_b.server.service;
 
 import server_2026_b.server.controllers.AuthController;
+
+
+import server_2026_b.server.entities.TaskEntity;
+
 import server_2026_b.server.entities.UserEntity;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -75,12 +79,20 @@ public class Persist {
     }
        //login query
      public UserResponse login(String username, String password) {
+
         if(username.isEmpty() || password.isEmpty()) { return new UserResponse(false,1232,null);}
 
         UserEntity newuser=sessionFactory.getCurrentSession()
                 .createQuery("FROM UserEntity WHERE username = :username and password= :password", UserEntity.class)
                 .setParameter("username", username)
                 .setParameter("password", password)
+
+        if(username.isEmpty()) { return new UserResponse(false,1232,null);}
+
+        UserEntity newuser=sessionFactory.getCurrentSession()
+                .createQuery("FROM UserEntity WHERE username = :username", UserEntity.class)
+                .setParameter("username", username)
+
                 .setMaxResults(1)
                 .uniqueResult();
         if(newuser!=null) {
@@ -105,5 +117,17 @@ public class Persist {
                 .list();
     }
 
+    public UserEntity getUserByWorker (WorkerEntity workerEntity) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("FROM UserEntity u WHERE u.workerEntity.id = :id", UserEntity.class)
+                .setParameter("id", workerEntity.getId())
+                .setMaxResults(1)
+                .uniqueResult();
+
+    }
+    public void addTask(TaskEntity taskEntity) {
+        sessionFactory.getCurrentSession().save(taskEntity);
+
+    }
 
 }

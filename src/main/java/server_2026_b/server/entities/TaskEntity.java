@@ -9,6 +9,18 @@ public class TaskEntity extends BasicEntity {
     private int hoursEstimation;
     private TeamEntity teamEntity;
 
+
+    private Integer hoursEstimation;
+    private TeamEntity teamEntity;
+
+    public TaskEntity(String title, String details, Date start, int hoursEstimation) {
+        this.hoursEstimation = hoursEstimation;
+        this.start = start;
+        this.details = details;
+        this.title = title;
+    }
+
+
     public String getTitle() {
         return title;
     }
