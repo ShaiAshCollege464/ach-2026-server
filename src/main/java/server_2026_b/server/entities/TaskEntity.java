@@ -8,12 +8,14 @@ public class TaskEntity extends BasicEntity {
     private Date start;
     private Integer hoursEstimation;
     private TeamEntity teamEntity;
+    private boolean isCompleted;
 
     public TaskEntity(String title, String details, Date start, int hoursEstimation) {
         this.hoursEstimation = hoursEstimation;
         this.start = start;
         this.details = details;
         this.title = title;
+        isCompleted = false;
     }
 
     public String getTitle() {
@@ -55,4 +57,9 @@ public class TaskEntity extends BasicEntity {
     public void setTeamEntity(TeamEntity teamEntity) {
         this.teamEntity = teamEntity;
     }
+
+    public void setIsCompleted(boolean isCompleted) {
+        this.isCompleted = !isCompleted;
+    }
+
 }
