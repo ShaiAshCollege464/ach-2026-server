@@ -16,7 +16,9 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import org.springframework.http.ResponseEntity;
+import server_2026_b.server.entities.TaskEntity;
+import server_2026_b.server.responses.TaskModel;
 @RestController
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class WorkerController extends BasicController {
@@ -122,13 +124,7 @@ public class WorkerController extends BasicController {
         return teamModels.stream().filter((item) -> item.getWorkersCount() > 0).toList();
     }
 
-    @RequestMapping("change-team")
-    public void changeTeam (int workerId, int teamId) {
-        WorkerEntity workerEntity = persist.loadObject(WorkerEntity.class, workerId);
-        TeamEntity teamEntity = persist.loadObject(TeamEntity.class, teamId);
-        workerEntity.setTeamEntity(teamEntity);
-        persist.save(workerEntity);
-    }
+
 
     @RequestMapping("/team-details")
     public TeamDetailsResponse teamDetails (@CookieValue(value = "token") String token,  int id) {
@@ -147,5 +143,44 @@ public class WorkerController extends BasicController {
         return teamDetails(token, id);
     }
 
+    @RequestMapping("get-all-teams")
+    public List<TeamModel> getAllTeams() {
+        List<TeamEntity> allTeams = persist.loadList(TeamEntity.class);
+        return allTeams.stream().map(TeamModel::new).toList();
+    }
 
+    @RequestMapping("change-team")
+    public ResponseEntity<String> changeTeam(@CookieValue(value = "token") String token,
+                                             int workerId, int teamId) {
+        WorkerEntity requester = persist.getWorkerByToken(token);
+        if (requester == null)
+            return ResponseEntity.status(403).body("Not authenticated");
+
+        WorkerEntity workerToTransfer = persist.loadObject(WorkerEntity.class, workerId);
+        boolean isManager = workerToTransfer.getManagerEntity() != null
+                && workerToTransfer.getManagerEntity().getId() == requester.getId();
+        if (!isManager)
+            return ResponseEntity.status(403).body("Only the worker's manager can transfer them");
+
+        TeamEntity teamEntity = persist.loadObject(TeamEntity.class, teamId);
+        workerToTransfer.setTeamEntity(teamEntity);
+        persist.save(workerToTransfer);
+        return ResponseEntity.ok("Transfer successful");
+    }
+
+    @RequestMapping("get-team-tasks")
+    public List<TaskModel> getTeamTasks(@CookieValue(value = "token") String token) {
+        WorkerEntity worker = persist.getWorkerByToken(token);
+        if (worker == null || worker.getTeamEntity() == null) return new ArrayList<>();
+        List<TaskEntity> tasks = persist.getTasksByTeam(worker.getTeamEntity().getId());
+        return tasks.stream().map(TaskModel::new).toList();
+    }
+
+    @RequestMapping("is-manager")
+    public java.util.Map<String, Boolean> isManager(@CookieValue(value = "token") String token) {
+        WorkerEntity worker = persist.getWorkerByToken(token);
+        boolean hasSubordinates = worker != null &&
+                !persist.getWorkersByManager(worker.getId()).isEmpty();
+        return java.util.Map.of("isManager", hasSubordinates);
+    }
 }

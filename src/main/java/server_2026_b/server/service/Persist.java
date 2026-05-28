@@ -117,6 +117,11 @@ public class Persist {
         sessionFactory.getCurrentSession().save(taskEntity);
 
     }
-
+    public List<TaskEntity> getTasksByTeam(int teamId) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("FROM TaskEntity WHERE teamEntity.id = :id", TaskEntity.class)
+                .setParameter("id", teamId)
+                .list();
+    }
 
 }
