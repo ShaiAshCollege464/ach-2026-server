@@ -5,6 +5,7 @@ import server_2026_b.server.entities.UserEntity;
 public class UserModel {
     private long userId;
     private long workerId;
+    private String role;
     private String token;
 
     public UserModel () {
@@ -12,6 +13,7 @@ public class UserModel {
 
     public UserModel (UserEntity user) {
         this.userId = user.getId();
+        this.role=user.getRoleType();
         this.workerId = user.getWorkerEntity().getId();
         this.token = user.getToken();
     }
@@ -19,6 +21,14 @@ public class UserModel {
 
     public long getUserId() {
         return userId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setUserId(long userId) {

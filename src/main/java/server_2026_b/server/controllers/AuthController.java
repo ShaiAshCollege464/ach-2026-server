@@ -79,7 +79,16 @@ public class AuthController extends BasicController {
             return null;
         }
     }
-
+    @RequestMapping(value = "/Logout", method = RequestMethod.POST)
+    public boolean logout(HttpServletResponse response) {
+        StringBuilder stringBuilder = new StringBuilder("token=")
+                .append("")
+                .append("; Path=/")
+                .append("; Max-Age=0") // אומר לדפדפן למחוק מיד
+                .append("; HttpOnly");
+        response.addHeader("Set-Cookie", stringBuilder.toString());
+        return true;
+    }
     @RequestMapping("/me")
     public BasicResponse me(@CookieValue("token") String token) {
         return new BasicResponse(token != null && !token.isEmpty(), null, null);
