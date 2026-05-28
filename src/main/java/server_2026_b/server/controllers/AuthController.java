@@ -98,10 +98,15 @@ public class AuthController extends BasicController {
     public BasicResponse getAuthenticatorUri(@CookieValue(value = "token") String token) {
         WorkerEntity manager = persist.getWorkerByToken(token);
         UserEntity user = persist.getUserByWorker(manager);
+
         if (user.isShouldDisplayQr()) {
-            String secret = TotpUtils.toBase32(manager.getFirstName() + " " + manager.getLastName());
-            String uri =
-                    String.format("otpauth://totp/MyWorkersApp?secret=%s&issuer=MyWorkersApp&digits=8", secret);
+            // תיקון 1: משתמשים ב-user.getUsername() בדיוק כמו ב-Login!
+            String secret = TotpUtils.toBase32(user.getUsername());
+
+            // תיקון 2: הורדת &digits=8 מהסוף כדי שהאפליקציה תציג 6 ספרות כמו בשרת
+            String uri = String.format("otpauth://totp/MyWorkersApp:%s?secret=%s&issuer=MyWorkersApp",
+                    user.getUsername(), secret);
+
             user.setShouldDisplayQr(false);
             persist.save(user);
             return new AuthenticatorResponse(true, null, uri);
