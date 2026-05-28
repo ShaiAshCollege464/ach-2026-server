@@ -12,6 +12,15 @@ import java.util.Date;
         private Date start;
         private int hoursEstimation;
         private String teamName;
+        private boolean completed;
+
+        public boolean isCompleted() {
+            return completed;
+        }
+
+        public void setCompleted(boolean completed) {
+            this.completed = completed;
+        }
 
         public TaskModel() {}
 
@@ -24,6 +33,7 @@ import java.util.Date;
             if (task.getTeamEntity() != null) {
                 this.teamName = task.getTeamEntity().getName();
             }
+            this.completed=task.getIsCompleted();
         }
 
         public int getId() { return id; }

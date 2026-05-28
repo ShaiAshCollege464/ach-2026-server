@@ -51,11 +51,14 @@
         <property name="title" column="title" type="string"/>
         <property name="details" column="details" type="string"/>
         <property name="start" column="start" type="java.util.Date"/>
-        <property name="hoursEstimation" column="hours_estimation" type="int"/>
+
+        <property name="hoursEstimation" column="hours_estimation" type="java.lang.Integer"/>
+
         <many-to-one
                 name="teamEntity"
                 column="team_id"
                 class="server_2026_b.server.entities.TeamEntity" />
+        <property name="isCompleted" column="is_completed" type="boolean"/>
     </class>
 
 
