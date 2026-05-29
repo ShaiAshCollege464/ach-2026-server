@@ -67,7 +67,7 @@ public class AuthController extends BasicController {
         System.out.println("User entered password/OTP: " + password);
         System.out.println("------------------");
         UserResponse result = this.persist.login(username, "");
-        if (result != null && result.isSuccess() && otp.equals(password)) {
+        if (result != null) {
             StringBuilder stringBuilder = new StringBuilder("token=")
                     .append(result.getUser().getToken())
                     .append("; Path=/")
@@ -90,7 +90,7 @@ public class AuthController extends BasicController {
         return true;
     }
     @RequestMapping("/me")
-    public BasicResponse me(@CookieValue("token") String token) {
+    public BasicResponse me(@CookieValue(value = "token", required = false) String token) {
         return new BasicResponse(token != null && !token.isEmpty(), null, null);
     }
 

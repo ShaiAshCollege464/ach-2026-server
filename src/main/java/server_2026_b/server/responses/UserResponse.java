@@ -6,8 +6,10 @@ public class UserResponse extends BasicResponse{
     private UserModel user;
 
     public UserResponse(boolean success, Integer errorCode, UserEntity userEntity) {
-        super(success, errorCode, userEntity.getWorkerEntity() != null ? userEntity.getWorkerEntity() : null);
-        this.user = new UserModel(userEntity);
+        super(success, errorCode, userEntity != null ? userEntity.getWorkerEntity() : null);
+        if (userEntity != null) {
+            this.user = new UserModel(userEntity);
+        }
     }
 
     public UserResponse(boolean success, Integer errorCode) {

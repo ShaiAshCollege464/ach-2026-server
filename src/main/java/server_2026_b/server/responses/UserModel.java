@@ -14,7 +14,9 @@ public class UserModel {
     public UserModel (UserEntity user) {
         this.userId = user.getId();
         this.role=user.getRoleType();
-        this.workerId = user.getWorkerEntity().getId();
+        if (user.getWorkerEntity() != null) {
+            this.workerId = user.getWorkerEntity().getId();
+        }
         this.token = user.getToken();
     }
 
