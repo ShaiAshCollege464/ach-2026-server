@@ -157,12 +157,26 @@ public class WorkerController extends BasicController {
             return ResponseEntity.status(403).body("Not authenticated");
 
         WorkerEntity workerToTransfer = persist.loadObject(WorkerEntity.class, workerId);
+        if (workerToTransfer == null) {
+            return ResponseEntity.badRequest().body("Worker not found");
+        }
+
         boolean isManager = workerToTransfer.getManagerEntity() != null
                 && workerToTransfer.getManagerEntity().getId() == requester.getId();
         if (!isManager)
             return ResponseEntity.status(403).body("Only the worker's manager can transfer them");
 
         TeamEntity teamEntity = persist.loadObject(TeamEntity.class, teamId);
+        if (teamEntity == null) {
+            return ResponseEntity.badRequest().body("Team not found");
+        }
+
+        boolean isManagersTeam = persist.getWorkersByManager(requester.getId()).stream()
+                .anyMatch(worker -> worker.getTeamEntity() != null && worker.getTeamEntity().getId() == teamId);
+        if (!isManagersTeam) {
+            return ResponseEntity.status(403).body("Manager can transfer workers only between their own teams");
+        }
+
         workerToTransfer.setTeamEntity(teamEntity);
         persist.save(workerToTransfer);
         return ResponseEntity.ok("Transfer successful");
