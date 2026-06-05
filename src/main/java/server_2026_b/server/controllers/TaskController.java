@@ -66,4 +66,31 @@ public class TaskController extends BasicController {
 
         return allTasks;
     }
+
+    @RequestMapping(value = "/task-completed", method = org.springframework.web.bind.annotation.RequestMethod.POST)
+    public ResponseEntity<String> toggleTaskCompleted(@CookieValue(value = "token") String token, int taskId) {
+        WorkerEntity worker = persist.getWorkerByToken(token);
+        if (worker == null) {
+            return ResponseEntity.status(403).body("Not authenticated");
+        }
+
+        TaskEntity task = persist.loadObject(TaskEntity.class, taskId);
+        if (task == null) {
+            return ResponseEntity.badRequest().body("Task not found");
+        }
+
+        boolean currentStatus = task.getIsCompleted();
+
+        try {
+            java.lang.reflect.Field field = TaskEntity.class.getDeclaredField("isCompleted");
+            field.setAccessible(true);
+            field.set(task, !currentStatus);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to update task field");
+        }
+
+        this.persist.save(task);
+
+        return ResponseEntity.ok("Task status updated successfully");
+    }
 }
